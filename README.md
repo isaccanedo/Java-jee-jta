@@ -98,3 +98,43 @@ public void executeTransfer(String fromAccontId, String toAccountId, BigDecimal 
     }
 }
 ```
+
+Uma RuntimeException não tratada após o primeiro @Transactional reverterá a transação para ambos os bancos de dados. Com efeito, a execução de uma transferência com um valor maior do que o saldo causará uma reversão:
+
+```
+assertThatThrownBy(() -> {
+    tellerService.executeTransfer("a0000002", "a0000001", BigDecimal.valueOf(10000));
+}).hasMessage("Insufficient fund.");
+
+assertThat(accountService.balanceOf("a0000001")).isEqualByComparingTo(BigDecimal.valueOf(1000));
+assertThat(accountService.balanceOf("a0000002")).isEqualByComparingTo(BigDecimal.valueOf(2000));
+assertThat(auditServie.lastTransferLog()).isNull();
+```
+
+# 5. Demarcação de transação programática
+Outra maneira de controlar a transação JTA é programaticamente por meio de UserTransaction.
+
+Agora vamos modificar executeTransfer() para lidar com a transação manualmente:
+
+```
+userTransaction.begin();
+ 
+bankAccountService.transfer(fromAccontId, toAccountId, amount);
+auditService.log(fromAccontId, toAccountId, amount);
+BigDecimal balance = bankAccountService.balanceOf(fromAccontId);
+if(balance.compareTo(BigDecimal.ZERO) < 0) {
+    userTransaction.rollback();
+    throw new RuntimeException("Insufficient fund.");
+} else {
+    userTransaction.commit();
+}
+```
+
+Em nosso exemplo, o método begin () inicia uma nova transação. Se a validação do saldo falhar, chamamos rollback (), que fará rollback em ambos os bancos de dados. Caso contrário, a chamada para commit () confirma as alterações em ambos os bancos de dados.
+
+É importante observar que tanto commit () quanto rollback () finalizam a transação atual.
+
+Em última análise, o uso da demarcação programática nos dá a flexibilidade de um controle de transação refinado.
+
+# 6. Conclusão
+Neste artigo, discutimos o problema que o JTA tenta resolver. Os exemplos de código ilustram o controle da transação com anotações e de forma programática, envolvendo 2 recursos transacionais que precisam ser coordenados em uma única transação.
