@@ -50,7 +50,7 @@ Finalmente, antes de cada método de teste, inicializamos AUDIT_LOG com dados va
 # 4. Demarcação de transação declarativa
 A primeira forma de trabalhar com transações em JTA é com o uso da anotação @Transactional. Para obter uma explicação e configuração mais elaboradas, consulte este artigo.
 
-Vamos anotar o método de serviço de fachada executeTranser () com @Transactional. Isso instrui o gerenciador de transações a iniciar uma transação:
+Vamos anotar o método de serviço de fachada executeTranser() com @Transactional. Isso instrui o gerenciador de transações a iniciar uma transação:
 
 ```
 @Transactional
@@ -130,9 +130,9 @@ if(balance.compareTo(BigDecimal.ZERO) < 0) {
 }
 ```
 
-Em nosso exemplo, o método begin () inicia uma nova transação. Se a validação do saldo falhar, chamamos rollback (), que fará rollback em ambos os bancos de dados. Caso contrário, a chamada para commit () confirma as alterações em ambos os bancos de dados.
+Em nosso exemplo, o método begin() inicia uma nova transação. Se a validação do saldo falhar, chamamos rollback(), que fará rollback em ambos os bancos de dados. Caso contrário, a chamada para commit() confirma as alterações em ambos os bancos de dados.
 
-É importante observar que tanto commit () quanto rollback () finalizam a transação atual.
+É importante observar que tanto commit() quanto rollback() finalizam a transação atual.
 
 Em última análise, o uso da demarcação programática nos dá a flexibilidade de um controle de transação refinado.
 
