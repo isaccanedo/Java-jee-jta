@@ -1,6 +1,6 @@
 # JTA
 
-# 1. Visão Geral
+## 1. Visão Geral
 Java Transaction API, mais comumente conhecido como JTA, é uma API para gerenciar transações em Java. Ele nos permite iniciar, confirmar e reverter transações de uma forma agnóstica de recursos.
 
 O verdadeiro poder do JTA está em sua capacidade de gerenciar vários recursos (ou seja, bancos de dados, serviços de mensagens) em uma única transação.
